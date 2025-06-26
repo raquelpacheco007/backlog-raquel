@@ -490,6 +490,17 @@
             color: white;
         }
 
+        .sync-syncing {
+            background: #f39c12;
+            color: white;
+            animation: pulse 1.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes pulse {
+            from { opacity: 0.7; }
+            to { opacity: 1; }
+        }
+
         .progress-bar {
             width: 100%;
             height: 6px;
@@ -783,6 +794,9 @@
             <div class="sync-status sync-connected" id="syncStatus">
                 🟢 Sistema Local Ativo
             </div>
+            <button onclick="forceSyncToFirebase()" style="background: #3498db; color: white; border: none; padding: 5px 15px; border-radius: 15px; font-size: 0.8em; margin-left: 10px; cursor: pointer;" title="Forçar Sincronização">
+                🔄 Sync
+            </button>
             <div class="progress-bar">
                 <div class="progress-fill" id="progressBar"></div>
             </div>
@@ -1023,10 +1037,16 @@
                         setupRealtimeSync();
                         document.getElementById('activityLog').style.display = 'block';
                         document.getElementById('firebaseInfo').style.display = 'none';
+                        
+                        // Forçar sincronização completa após reconexão
+                        setTimeout(() => {
+                            forceSyncToFirebase();
+                        }, 1000);
+                        
                     } else if (snap.val() === false && connected) {
                         connected = false;
-                        console.log('❌ Desconectado');
-                        updateSyncStatus('disconnected', 'Conexão Perdida');
+                        console.log('❌ Desconectado do Firebase');
+                        updateSyncStatus('disconnected', 'Conexão Perdida - Modo Local');
                     }
                 });
 
@@ -1044,7 +1064,7 @@
             database.ref('tasks').once('value', (snapshot) => {
                 const data = snapshot.val();
                 if (data && Array.isArray(data) && data.length > 0) {
-                    console.log('☁️ Dados encontrados no Firebase, sincronizando...');
+                    console.log('☁️ Tarefas encontradas no Firebase, sincronizando...');
                     tasks = data;
                     tasks.sort((a, b) => {
                         const [yearA, monthA, dayA] = a.date.split('-').map(Number);
@@ -1066,16 +1086,21 @@
             // Carregar estado de tarefas concluídas
             database.ref('completedTasks').once('value', (snapshot) => {
                 const data = snapshot.val();
-                if (data) {
-                    console.log('☁️ Tarefas concluídas encontradas no Firebase');
+                console.log('📊 Carregando status de conclusão do Firebase:', data);
+                
+                if (data && Array.isArray(data)) {
+                    console.log('☁️ Status de conclusão encontrado no Firebase');
                     completedTasks = new Set(data);
                     saveToLocalStorage();
                     updateInterface();
-                } else {
-                    console.log('📁 Enviando tarefas concluídas para Firebase...');
+                } else if (data === null || data === undefined) {
+                    console.log('📁 Status de conclusão vazio no Firebase');
                     if (completedTasks.size > 0) {
+                        console.log('📤 Enviando status local para Firebase...');
                         database.ref('completedTasks').set([...completedTasks]);
                     }
+                } else {
+                    console.log('⚠️ Status de conclusão em formato inesperado:', data);
                 }
             });
 
@@ -1100,10 +1125,34 @@
 
             database.ref('completedTasks').on('value', (snapshot) => {
                 const data = snapshot.val();
-                if (data) {
-                    completedTasks = new Set(data);
-                    saveToLocalStorage();
-                    updateInterface();
+                console.log('🔄 Status de conclusão atualizado no Firebase:', data);
+                
+                if (data && Array.isArray(data)) {
+                    const newCompletedTasks = new Set(data);
+                    
+                    // Verificar se houve mudanças
+                    const oldSize = completedTasks.size;
+                    const newSize = newCompletedTasks.size;
+                    const hasChanges = oldSize !== newSize || 
+                                     ![...completedTasks].every(id => newCompletedTasks.has(id)) ||
+                                     ![...newCompletedTasks].every(id => completedTasks.has(id));
+                    
+                    if (hasChanges) {
+                        console.log(`📊 Mudança detectada: ${oldSize} → ${newSize} tarefas concluídas`);
+                        completedTasks = newCompletedTasks;
+                        saveToLocalStorage();
+                        updateInterface();
+                    }
+                } else if (data === null || data === undefined) {
+                    // Firebase retornou null/undefined, limpar tarefas concluídas
+                    if (completedTasks.size > 0) {
+                        console.log('🗑️ Limpando tarefas concluídas (Firebase vazio)');
+                        completedTasks.clear();
+                        saveToLocalStorage();
+                        updateInterface();
+                    }
+                } else {
+                    console.log('⚠️ Dados de conclusão em formato inesperado:', data);
                 }
             });
 
@@ -1119,9 +1168,21 @@
             
             // Tentar salvar no Firebase se conectado
             if (connected && database) {
-                console.log('☁️ Salvando no Firebase...');
-                database.ref('tasks').set(tasks);
-                database.ref('completedTasks').set([...completedTasks]);
+                console.log('☁️ Salvando dados completos no Firebase...');
+                
+                // Usar transação para garantir consistência
+                const updates = {};
+                updates['/tasks'] = tasks;
+                updates['/completedTasks'] = [...completedTasks];
+                
+                database.ref().update(updates).then(() => {
+                    console.log('✅ Dados sincronizados com Firebase:', {
+                        tarefas: tasks.length,
+                        concluidas: completedTasks.size
+                    });
+                }).catch((error) => {
+                    console.error('❌ Erro ao sincronizar com Firebase:', error);
+                });
             } else {
                 console.log('💾 Salvo apenas localmente (Firebase desconectado)');
             }
@@ -1541,22 +1602,29 @@
 
             const wasCompleted = completedTasks.has(taskId);
             
+            console.log(`🔄 Alterando status da tarefa ${taskId}: ${wasCompleted ? 'CONCLUÍDA → PENDENTE' : 'PENDENTE → CONCLUÍDA'}`);
+            
             if (wasCompleted) {
                 completedTasks.delete(taskId);
             } else {
                 completedTasks.add(taskId);
             }
 
+            // Salvar localmente primeiro
             saveToLocalStorage();
-            updateProgress();
-            if (currentView === 'timeline') {
-                generateTimeline();
-            } else {
-                generateCalendar();
-            }
             
+            // Atualizar interface imediatamente
+            updateInterface();
+            
+            // Sincronizar com Firebase se conectado
             if (connected && database) {
-                database.ref('completedTasks').set([...completedTasks]);
+                console.log('☁️ Sincronizando status com Firebase...');
+                const completedArray = [...completedTasks];
+                database.ref('completedTasks').set(completedArray).then(() => {
+                    console.log('✅ Status sincronizado com Firebase:', completedArray);
+                }).catch((error) => {
+                    console.error('❌ Erro ao sincronizar status:', error);
+                });
                 
                 const activity = {
                     action: wasCompleted ? 'reopened' : 'completed',
@@ -1632,10 +1700,39 @@
             const icons = {
                 connected: '🟢',
                 connecting: '🟡',
-                disconnected: '🔴'
+                disconnected: '🔴',
+                syncing: '🔄'
             };
             
             statusEl.textContent = `${icons[status]} ${text}`;
+            
+            // Adicionar indicador de última sincronização
+            if (status === 'connected') {
+                const now = new Date().toLocaleTimeString();
+                statusEl.title = `Última sincronização: ${now}`;
+            }
+        }
+
+        function forceSyncToFirebase() {
+            if (!connected || !database) {
+                console.log('❌ Não é possível sincronizar - Firebase desconectado');
+                return;
+            }
+            
+            console.log('🔄 Forçando sincronização completa...');
+            updateSyncStatus('syncing', 'Sincronizando...');
+            
+            const updates = {};
+            updates['/tasks'] = tasks;
+            updates['/completedTasks'] = [...completedTasks];
+            
+            database.ref().update(updates).then(() => {
+                console.log('✅ Sincronização forçada concluída');
+                updateSyncStatus('connected', 'Sincronizado');
+            }).catch((error) => {
+                console.error('❌ Erro na sincronização forçada:', error);
+                updateSyncStatus('connected', 'Erro na Sincronização');
+            });
         }
 
         function showFirebaseInstructions() {
