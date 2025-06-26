@@ -196,6 +196,235 @@
             text-decoration: line-through;
         }
 
+        .add-task-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .add-task-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 12px 35px rgba(0,0,0,0.4);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: white;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            position: relative;
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        @keyframes modalSlideIn {
+            from { opacity: 0; transform: translateY(-50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #ecf0f1;
+        }
+
+        .modal-title {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: #7f8c8d;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .close-btn:hover {
+            color: #e74c3c;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #2c3e50;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ecf0f1;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+            font-family: inherit;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            justify-content: flex-end;
+            margin-top: 25px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        }
+
+        .btn-secondary {
+            background: #ecf0f1;
+            color: #7f8c8d;
+        }
+
+        .btn-secondary:hover {
+            background: #bdc3c7;
+        }
+
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+
+        .task-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .timeline-content:hover .task-actions {
+            opacity: 1;
+        }
+
+        .calendar-task .task-actions {
+            flex-direction: row;
+            justify-content: center;
+        }
+
+        .task-btn {
+            padding: 4px 8px;
+            border: none;
+            border-radius: 5px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .task-btn.edit {
+            background: #3498db;
+            color: white;
+        }
+
+        .task-btn.delete {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .task-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .task-id {
+            font-size: 0.7em;
+            color: #bdc3c7;
+            margin-top: 5px;
+        }
+
+        .custom-client-hint {
+            background: #e8f5e8;
+            border: 1px solid #2ecc71;
+            border-radius: 8px;
+            padding: 10px;
+            margin-top: 10px;
+            font-size: 0.9em;
+            color: #27ae60;
+        }
+
+        .custom-client-hint strong {
+            color: #2ecc71;
+        }
+
+        #customClient {
+            border-color: #2ecc71;
+        }
+
+        #customClient:focus {
+            border-color: #27ae60;
+            box-shadow: 0 0 0 3px rgba(46, 204, 113, 0.1);
+        }
+
         .sync-status {
             display: inline-block;
             padding: 5px 15px;
@@ -472,16 +701,15 @@
 
         <div class="activity-log" id="setupMessage" style="display: none; background: #fff3cd; border: 1px solid #ffeaa7;">
             <h4>🔧 Configuração Necessária</h4>
-            <p>Para sincronizar automaticamente, você precisa configurar seu próprio Firebase:</p>
+            <p><strong>⚠️ Por segurança, as credenciais foram movidas para arquivo separado:</strong></p>
             <ol>
-                <li>Vá para <a href="https://console.firebase.google.com" target="_blank">Firebase Console</a></li>
-                <li>Crie um novo projeto</li>
-                <li>Habilite Realtime Database</li>
-                <li>Configure as regras para permitir leitura/escrita</li>
-                <li>Substitua a configuração no código</li>
+                <li>Crie um arquivo <code>firebase-config.js</code> na mesma pasta do <code>index.html</code></li>
+                <li>Configure seu projeto no <a href="https://console.firebase.google.com" target="_blank">Firebase Console</a></li>
+                <li>Copie suas credenciais para o arquivo de configuração</li>
+                <li>Adicione o arquivo ao <code>.gitignore</code> para não enviar ao GitHub</li>
             </ol>
             <button onclick="showFirebaseInstructions()" style="background: #3498db; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">
-                📋 Ver Instruções Detalhadas
+                📋 Ver Instruções Completas
             </button>
         </div>
 
@@ -499,11 +727,86 @@
         <div class="timeline" id="timeline">
             <!-- Timeline será gerada dinamicamente -->
         </div>
+
+        <!-- Botão Adicionar Tarefa -->
+        <button class="add-task-btn" onclick="openAddTaskModal()" title="Adicionar Nova Tarefa">
+            ➕
+        </button>
+
+        <!-- Modal Adicionar/Editar Tarefa -->
+        <div id="taskModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="modal-title" id="modalTitle">Adicionar Nova Tarefa</div>
+                    <button class="close-btn" onclick="closeTaskModal()">&times;</button>
+                </div>
+                
+                <form id="taskForm">
+                    <div class="form-group">
+                        <label class="form-label">Data da Tarefa *</label>
+                        <input type="date" id="taskDate" class="form-input" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Cliente *</label>
+                        <select id="taskClient" class="form-select" required onchange="updateTaskType()">
+                            <option value="">Selecione o cliente</option>
+                            <option value="POP">POP</option>
+                            <option value="YES">YES</option>
+                            <option value="SELLETO">SELLETO</option>
+                            <option value="ORAL Recife + Jaboatão">ORAL Recife + Jaboatão</option>
+                            <option value="GERAL">GERAL</option>
+                            <option value="OUTRO">✨ Novo Cliente...</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group" id="customClientGroup" style="display: none;">
+                        <label class="form-label">Nome do Novo Cliente *</label>
+                        <input type="text" id="customClient" class="form-input" placeholder="Digite o nome do novo cliente..." onblur="validateCustomClient()">
+                        <div class="custom-client-hint">
+                            <strong>💡 Dica:</strong> Use nomes claros e únicos como "DENTAL CENTER SP", "CLÍNICA NOVA BH", "ODONTO PREMIUM", etc.
+                            <br><small>O cliente será automaticamente adicionado à lista para próximas tarefas.</small>
+                        </div>
+                        <div id="clientValidationMessage" style="display: none; margin-top: 8px; padding: 8px; border-radius: 5px;"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Título da Tarefa *</label>
+                        <input type="text" id="taskTitle" class="form-input" placeholder="Ex: CRM - Criação de Ficha" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Descrição</label>
+                        <textarea id="taskDescription" class="form-textarea" placeholder="Descreva os detalhes da automação..."></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Tipo</label>
+                        <select id="taskType" class="form-select">
+                            <option value="pop">POP</option>
+                            <option value="yes">YES</option>
+                            <option value="selleto">SELLETO</option>
+                            <option value="oral">ORAL</option>
+                            <option value="followup">FOLLOW-UP</option>
+                        </select>
+                    </div>
+                </form>
+                
+                <div class="btn-group">
+                    <button type="button" class="btn btn-secondary" onclick="closeTaskModal()">Cancelar</button>
+                    <button type="button" class="btn btn-danger" id="deleteTaskBtn" onclick="deleteTask()" style="display: none;">Excluir</button>
+                    <button type="button" class="btn btn-primary" onclick="saveTask()">Salvar</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Firebase SDK v8 (mais compatível) -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    
+    <!-- Configuração Firebase Externa (crie este arquivo separadamente) -->
+    <script src="firebase-config.js"></script>
 
     <script>
         // Dados das tarefas
@@ -528,22 +831,390 @@
         let connected = false;
         let currentDate = new Date();
         let currentView = 'calendar'; // ou 'timeline'
+        let editingTaskId = null;
 
-        // Configuração Firebase - SUBSTITUA PELA SUA CONFIGURAÇÃO
-        const firebaseConfig = {
-            apiKey: "SUBSTITUA-PELA-SUA-API-KEY",
-            authDomain: "seu-projeto.firebaseapp.com",
-            databaseURL: "https://seu-projeto-default-rtdb.firebaseio.com/",
-            projectId: "seu-projeto"
-        };
+        // ⚠️ CREDENCIAIS REMOVIDAS POR SEGURANÇA
+        // Configuração será carregada do arquivo firebase-config.js
+        let firebaseConfigToUse = null;
 
-        // Configuração de demonstração (para que funcione para o criador)
-        const workingConfig = {
-            apiKey: "AIzaSyCxNtLwSZJ39JSD7188TfvzYrDwUH2dBvg",
-            authDomain: "backlog-e73b7.firebaseapp.com", 
-            databaseURL: "https://backlog-e73b7-default-rtdb.firebaseio.com/",
-            projectId: "backlog-e73b7"
-        };
+        // Função para carregar configuração externa
+        function loadFirebaseConfig() {
+            if (window.firebaseConfig) {
+                firebaseConfigToUse = window.firebaseConfig;
+                console.log('✅ Configuração Firebase carregada de arquivo externo');
+                return true;
+            } else {
+                console.log('⚠️ Arquivo firebase-config.js não encontrado');
+                return false;
+            }
+        }
+
+        function validateCustomClient() {
+            const customClientInput = document.getElementById('customClient');
+            const clientName = customClientInput.value.trim().toUpperCase();
+            const messageDiv = document.getElementById('clientValidationMessage');
+            
+            if (!clientName) {
+                messageDiv.style.display = 'none';
+                return;
+            }
+            
+            // Verificar se já existe
+            const existingClients = tasks.map(task => task.client.toUpperCase());
+            const defaultClients = ['POP', 'YES', 'SELLETO', 'ORAL RECIFE + JABOATÃO', 'GERAL'];
+            const allClients = [...existingClients, ...defaultClients];
+            
+            if (allClients.includes(clientName)) {
+                messageDiv.style.display = 'block';
+                messageDiv.style.background = '#ffe6e6';
+                messageDiv.style.color = '#e74c3c';
+                messageDiv.style.border = '1px solid #e74c3c';
+                messageDiv.textContent = `⚠️ Cliente "${clientName}" já existe! Escolha um nome diferente.`;
+                customClientInput.style.borderColor = '#e74c3c';
+            } else {
+                messageDiv.style.display = 'block';
+                messageDiv.style.background = '#e8f5e8';
+                messageDiv.style.color = '#27ae60';
+                messageDiv.style.border = '1px solid #2ecc71';
+                messageDiv.textContent = `✅ Nome "${clientName}" disponível!`;
+                customClientInput.style.borderColor = '#2ecc71';
+            }
+        }
+
+        function updateTaskType() {
+            const client = document.getElementById('taskClient').value;
+            const taskTypeSelect = document.getElementById('taskType');
+            const customClientGroup = document.getElementById('customClientGroup');
+            const customClientInput = document.getElementById('customClient');
+            
+            // Mostrar/esconder campo personalizado
+            if (client === 'OUTRO') {
+                customClientGroup.style.display = 'block';
+                customClientInput.required = true;
+                taskTypeSelect.value = 'followup'; // Padrão para novos clientes
+            } else {
+                customClientGroup.style.display = 'none';
+                customClientInput.required = false;
+                customClientInput.value = '';
+                
+                // Mapear cliente para tipo
+                const clientTypeMap = {
+                    'POP': 'pop',
+                    'YES': 'yes',
+                    'SELLETO': 'selleto',
+                    'ORAL Recife + Jaboatão': 'oral',
+                    'GERAL': 'followup'
+                };
+                
+                if (clientTypeMap[client]) {
+                    taskTypeSelect.value = clientTypeMap[client];
+                }
+            }
+        }
+
+        // Funções do Modal
+        function openAddTaskModal() {
+            editingTaskId = null;
+            document.getElementById('modalTitle').textContent = 'Adicionar Nova Tarefa';
+            document.getElementById('deleteTaskBtn').style.display = 'none';
+            
+            // Limpar formulário
+            document.getElementById('taskForm').reset();
+            document.getElementById('taskDate').value = new Date().toISOString().split('T')[0];
+            document.getElementById('customClientGroup').style.display = 'none';
+            document.getElementById('customClient').required = false;
+            
+            // Atualizar lista de clientes com os usados anteriormente
+            updateClientsList();
+            
+            document.getElementById('taskModal').style.display = 'block';
+        }
+
+        function openEditTaskModal(taskId) {
+            const task = tasks.find(t => t.id === taskId);
+            if (!task) return;
+            
+            editingTaskId = taskId;
+            document.getElementById('modalTitle').textContent = 'Editar Tarefa';
+            document.getElementById('deleteTaskBtn').style.display = 'inline-block';
+            
+            // Atualizar lista de clientes
+            updateClientsList();
+            
+            // Verificar se é cliente personalizado
+            const defaultClients = ['POP', 'YES', 'SELLETO', 'ORAL Recife + Jaboatão', 'GERAL'];
+            const isCustomClient = !defaultClients.includes(task.client);
+            
+            if (isCustomClient) {
+                // Verificar se o cliente já existe na lista
+                const clientSelect = document.getElementById('taskClient');
+                const existingOption = Array.from(clientSelect.options).find(option => option.value === task.client);
+                
+                if (!existingOption) {
+                    // Cliente não está na lista, usar campo personalizado
+                    document.getElementById('taskClient').value = 'OUTRO';
+                    document.getElementById('customClientGroup').style.display = 'block';
+                    document.getElementById('customClient').required = true;
+                    document.getElementById('customClient').value = task.client;
+                } else {
+                    // Cliente existe na lista
+                    document.getElementById('taskClient').value = task.client;
+                }
+            } else {
+                // Cliente padrão
+                document.getElementById('taskClient').value = task.client;
+                document.getElementById('customClientGroup').style.display = 'none';
+                document.getElementById('customClient').required = false;
+            }
+            
+            // Preencher outros campos
+            document.getElementById('taskDate').value = task.date;
+            document.getElementById('taskTitle').value = task.title;
+            document.getElementById('taskDescription').value = task.description;
+            document.getElementById('taskType').value = task.type;
+            
+            document.getElementById('taskModal').style.display = 'block';
+        }
+
+        function updateClientsList() {
+            const clientSelect = document.getElementById('taskClient');
+            
+            // Obter clientes únicos das tarefas existentes
+            const existingClients = [...new Set(tasks.map(task => task.client))];
+            const defaultClients = ['POP', 'YES', 'SELLETO', 'ORAL Recife + Jaboatão', 'GERAL'];
+            
+            // Encontrar clientes personalizados
+            const customClients = existingClients.filter(client => !defaultClients.includes(client));
+            
+            // Limpar opções existentes (manter apenas as padrões e "Novo Cliente")
+            const currentValue = clientSelect.value;
+            clientSelect.innerHTML = `
+                <option value="">Selecione o cliente</option>
+                <option value="POP">POP</option>
+                <option value="YES">YES</option>
+                <option value="SELLETO">SELLETO</option>
+                <option value="ORAL Recife + Jaboatão">ORAL Recife + Jaboatão</option>
+                <option value="GERAL">GERAL</option>
+            `;
+            
+            // Adicionar clientes personalizados existentes
+            if (customClients.length > 0) {
+                // Adicionar separador
+                const separator = document.createElement('option');
+                separator.disabled = true;
+                separator.textContent = '──────────────────';
+                clientSelect.appendChild(separator);
+                
+                // Adicionar clientes personalizados
+                customClients.sort().forEach(client => {
+                    const option = document.createElement('option');
+                    option.value = client;
+                    option.textContent = `🏢 ${client}`;
+                    clientSelect.appendChild(option);
+                });
+            }
+            
+            // Adicionar opção "Novo Cliente"
+            const newClientOption = document.createElement('option');
+            newClientOption.value = 'OUTRO';
+            newClientOption.textContent = '✨ Novo Cliente...';
+            clientSelect.appendChild(newClientOption);
+            
+            // Restaurar valor selecionado
+            clientSelect.value = currentValue;
+        }
+
+        function closeTaskModal() {
+            document.getElementById('taskModal').style.display = 'none';
+            document.getElementById('customClientGroup').style.display = 'none';
+            document.getElementById('customClient').required = false;
+            document.getElementById('clientValidationMessage').style.display = 'none';
+            document.getElementById('customClient').style.borderColor = '#ecf0f1';
+            editingTaskId = null;
+        }
+
+        function saveTask() {
+            const date = document.getElementById('taskDate').value;
+            let client = document.getElementById('taskClient').value;
+            const title = document.getElementById('taskTitle').value;
+            const description = document.getElementById('taskDescription').value;
+            let type = document.getElementById('taskType').value;
+            
+            // Verificar se é cliente personalizado
+            if (client === 'OUTRO') {
+                const customClient = document.getElementById('customClient').value.trim();
+                if (!customClient) {
+                    alert('Por favor, digite o nome do novo cliente.');
+                    document.getElementById('customClient').focus();
+                    return;
+                }
+                
+                const clientName = customClient.toUpperCase();
+                
+                // Verificar duplicatas (exceto se for edição do mesmo cliente)
+                const existingClients = tasks.map(task => task.client.toUpperCase());
+                const defaultClients = ['POP', 'YES', 'SELLETO', 'ORAL RECIFE + JABOATÃO', 'GERAL'];
+                const allClients = [...existingClients, ...defaultClients];
+                
+                if (allClients.includes(clientName)) {
+                    // Se está editando e o cliente é o mesmo, permitir
+                    if (editingTaskId) {
+                        const currentTask = tasks.find(t => t.id === editingTaskId);
+                        if (currentTask && currentTask.client.toUpperCase() === clientName) {
+                            // Mesmo cliente, ok
+                        } else {
+                            alert(`Cliente "${clientName}" já existe! Escolha um nome diferente.`);
+                            document.getElementById('customClient').focus();
+                            return;
+                        }
+                    } else {
+                        alert(`Cliente "${clientName}" já existe! Escolha um nome diferente.`);
+                        document.getElementById('customClient').focus();
+                        return;
+                    }
+                }
+                
+                client = clientName;
+                
+                // Gerar tipo automático para cliente personalizado
+                type = generateTypeForCustomClient(client);
+            }
+            
+            if (!date || !client || !title) {
+                alert('Por favor, preencha todos os campos obrigatórios (*)');
+                return;
+            }
+            
+            if (editingTaskId) {
+                // Editar tarefa existente
+                const taskIndex = tasks.findIndex(t => t.id === editingTaskId);
+                if (taskIndex !== -1) {
+                    tasks[taskIndex] = {
+                        ...tasks[taskIndex],
+                        date,
+                        client,
+                        title,
+                        description,
+                        type
+                    };
+                    console.log('✅ Tarefa editada:', tasks[taskIndex]);
+                }
+            } else {
+                // Adicionar nova tarefa
+                const newTask = {
+                    id: Date.now(), // ID único baseado em timestamp
+                    date,
+                    client,
+                    title,
+                    description,
+                    type
+                };
+                tasks.push(newTask);
+                console.log('✅ Nova tarefa adicionada:', newTask);
+            }
+            
+            // Ordenar tarefas por data
+            tasks.sort((a, b) => new Date(a.date) - new Date(b.date));
+            
+            // Salvar no Firebase se conectado
+            saveTasksToDatabase();
+            
+            // Atualizar interface
+            updateInterface();
+            
+            // Adicionar estilo CSS dinâmico para novo cliente se necessário
+            addCustomClientStyles(client, type);
+            
+            // Fechar modal
+            closeTaskModal();
+            
+            // Mostrar mensagem de sucesso
+            const action = editingTaskId ? 'editada' : 'adicionada';
+            console.log(`🎉 Tarefa ${action} com sucesso!`);
+            
+            // Se foi adicionado um novo cliente, mostrar dica
+            const defaultClients = ['POP', 'YES', 'SELLETO', 'ORAL RECIFE + JABOATÃO', 'GERAL'];
+            if (!defaultClients.includes(client)) {
+                console.log(`💡 Cliente "${client}" ${editingTaskId ? 'atualizado' : 'adicionado'}! Ele aparecerá na lista para próximas tarefas.`);
+            }
+        }
+
+        function generateTypeForCustomClient(clientName) {
+            // Gerar tipo baseado no nome do cliente ou usar hash simples
+            const hash = clientName.split('').reduce((a, b) => {
+                a = ((a << 5) - a) + b.charCodeAt(0);
+                return a & a;
+            }, 0);
+            
+            const types = ['pop', 'yes', 'selleto', 'oral', 'followup'];
+            const index = Math.abs(hash) % types.length;
+            return types[index];
+        }
+
+        function addCustomClientStyles(client, type) {
+            // Verificar se já existe estilo para este cliente
+            const existingStyle = document.querySelector(`style[data-client="${client}"]`);
+            if (existingStyle) return;
+            
+            // Gerar cor baseada no nome do cliente
+            const colors = ['#e74c3c', '#f39c12', '#9b59b6', '#2ecc71', '#3498db', '#e67e22', '#1abc9c', '#34495e'];
+            const hash = client.split('').reduce((a, b) => {
+                a = ((a << 5) - a) + b.charCodeAt(0);
+                return a & a;
+            }, 0);
+            const color = colors[Math.abs(hash) % colors.length];
+            
+            // Criar estilo CSS dinâmico
+            const style = document.createElement('style');
+            style.setAttribute('data-client', client);
+            style.textContent = `
+                .client-${type}[data-client="${client}"] { background: ${color} !important; }
+                .calendar-task.${type}[data-client="${client}"] { background: ${color} !important; }
+                .timeline-content.${type}[data-client="${client}"] { border-color: ${color} !important; }
+            `;
+            document.head.appendChild(style);
+        }
+
+        function deleteTask() {
+            if (!editingTaskId) return;
+            
+            if (confirm('Tem certeza que deseja excluir esta tarefa?')) {
+                // Remover tarefa do array
+                const taskIndex = tasks.findIndex(t => t.id === editingTaskId);
+                if (taskIndex !== -1) {
+                    const deletedTask = tasks.splice(taskIndex, 1)[0];
+                    console.log('🗑️ Tarefa excluída:', deletedTask);
+                    
+                    // Remover das tarefas concluídas se estiver lá
+                    completedTasks.delete(editingTaskId);
+                    
+                    // Salvar no Firebase
+                    saveTasksToDatabase();
+                    
+                    // Atualizar interface
+                    updateInterface();
+                    
+                    // Fechar modal
+                    closeTaskModal();
+                }
+            }
+        }
+
+        function saveTasksToDatabase() {
+            if (connected && database) {
+                database.ref('tasks').set(tasks);
+                database.ref('completedTasks').set([...completedTasks]);
+            }
+        }
+
+        function updateInterface() {
+            updateProgress();
+            if (currentView === 'timeline') {
+                generateTimeline();
+            } else {
+                generateCalendar();
+            }
+        }
 
         // Funções de visualização
         function showTimeline() {
@@ -640,17 +1311,22 @@
                 dayTasks.forEach(task => {
                     const taskElement = document.createElement('div');
                     taskElement.className = `calendar-task ${task.type}`;
+                    taskElement.setAttribute('data-client', task.client);
                     if (completedTasks.has(task.id)) {
                         taskElement.classList.add('completed');
                     }
-                    taskElement.textContent = task.client;
+                    taskElement.innerHTML = `
+                        <div onclick="event.stopPropagation(); toggleTask(${task.id}, '${task.title}')">${task.client}</div>
+                        <div class="task-actions" style="margin-top: 2px;">
+                            <button class="task-btn edit" onclick="event.stopPropagation(); openEditTaskModal(${task.id})" title="Editar">✏️</button>
+                            <button class="task-btn delete" onclick="event.stopPropagation(); confirmDeleteTask(${task.id})" title="Excluir">🗑️</button>
+                        </div>
+                    `;
                     taskElement.title = `${task.title} - ${task.description}`;
-                    taskElement.onclick = (e) => {
-                        e.stopPropagation();
-                        toggleTask(task.id, task.title);
-                        setTimeout(() => generateCalendar(), 100); // Atualizar calendário
-                    };
                     dayElement.appendChild(taskElement);
+                    
+                    // Adicionar estilos para clientes personalizados
+                    addCustomClientStyles(task.client, task.type);
                 });
                 
                 calendarGrid.appendChild(dayElement);
@@ -662,7 +1338,6 @@
             console.log('🚀 Iniciando conexão automática...');
             console.log('Verificando Firebase SDK...');
             console.log('typeof firebase:', typeof firebase);
-            console.log('window.firebase:', window.firebase);
             
             updateSyncStatus('connecting', 'Conectando automaticamente...');
             
@@ -671,7 +1346,6 @@
                 console.error('❌ Firebase SDK não carregado');
                 console.log('Tentando aguardar mais tempo para carregar...');
                 
-                // Tentar aguardar mais tempo
                 setTimeout(() => {
                     console.log('Segunda tentativa - typeof firebase:', typeof firebase);
                     if (typeof firebase === 'undefined') {
@@ -691,22 +1365,16 @@
         }
 
         function continueConnection() {
-            // Usar configuração de demonstração se a padrão não estiver configurada
-            let configToUse = workingConfig;
-            if (firebaseConfig.apiKey && !firebaseConfig.apiKey.includes('SUBSTITUA')) {
-                configToUse = firebaseConfig;
-            }
-            
-            console.log('Configuração a usar:', configToUse.projectId);
-            
-            // Verificar se é configuração placeholder
-            if (configToUse.apiKey.includes('SUBSTITUA') || configToUse.apiKey.includes('Dummy')) {
-                console.log('⚠️ Configuração não definida');
+            // Carregar configuração externa
+            if (!loadFirebaseConfig()) {
+                console.log('⚠️ Configuração Firebase não encontrada');
                 setTimeout(() => {
-                    updateSyncStatus('disconnected', 'Configure seu Firebase para sincronizar');
+                    updateSyncStatus('disconnected', 'Crie o arquivo firebase-config.js com suas credenciais');
                 }, 2000);
                 return;
             }
+            
+            console.log('Configuração carregada:', firebaseConfigToUse.projectId);
             
             try {
                 // Verificar se Firebase já foi inicializado
@@ -716,7 +1384,7 @@
                 }
                 
                 console.log('Inicializando Firebase...');
-                firebase.initializeApp(configToUse);
+                firebase.initializeApp(firebaseConfigToUse);
                 database = firebase.database();
                 console.log('✅ Firebase inicializado!');
                 
@@ -724,7 +1392,6 @@
                 setTimeout(() => {
                     if (!connected) {
                         console.log('⚠️ Timeout, testando conexão...');
-                        // Tentar escrever algo para testar
                         database.ref('connection_test').set({
                             timestamp: Date.now(),
                             status: 'timeout_test'
@@ -771,7 +1438,7 @@
 
             } catch (error) {
                 console.error('❌ Erro ao conectar:', error);
-                updateSyncStatus('disconnected', 'Erro na Conexão: ' + error.message);
+                updateSyncStatus('disconnected', 'Erro na Configuração: ' + error.message);
             }
         }
 
@@ -880,32 +1547,64 @@
             });
         }
 
+        function confirmDeleteTask(taskId) {
+            const task = tasks.find(t => t.id === taskId);
+            if (task && confirm(`Tem certeza que deseja excluir a tarefa "${task.title}"?`)) {
+                // Remover tarefa do array
+                const taskIndex = tasks.findIndex(t => t.id === taskId);
+                if (taskIndex !== -1) {
+                    const deletedTask = tasks.splice(taskIndex, 1)[0];
+                    console.log('🗑️ Tarefa excluída:', deletedTask);
+                    
+                    // Remover das tarefas concluídas se estiver lá
+                    completedTasks.delete(taskId);
+                    
+                    // Salvar no Firebase
+                    saveTasksToDatabase();
+                    
+                    // Atualizar interface
+                    updateInterface();
+                }
+            }
+        }
+
         function setupRealtimeSync() {
-            // Carregar estado atual
+            // Carregar tarefas
+            database.ref('tasks').once('value', (snapshot) => {
+                const data = snapshot.val();
+                if (data && Array.isArray(data)) {
+                    tasks = data;
+                    // Ordenar por data
+                    tasks.sort((a, b) => new Date(a.date) - new Date(b.date));
+                    updateInterface();
+                }
+            });
+
+            // Carregar estado de tarefas concluídas
             database.ref('completedTasks').once('value', (snapshot) => {
                 const data = snapshot.val();
                 if (data) {
                     completedTasks = new Set(data);
-                    updateProgress();
-                    if (currentView === 'timeline') {
-                        generateTimeline();
-                    } else {
-                        generateCalendar();
-                    }
+                    updateInterface();
                 }
             });
 
-            // Escutar mudanças em tempo real
+            // Escutar mudanças em tempo real nas tarefas
+            database.ref('tasks').on('value', (snapshot) => {
+                const data = snapshot.val();
+                if (data && Array.isArray(data)) {
+                    tasks = data;
+                    tasks.sort((a, b) => new Date(a.date) - new Date(b.date));
+                    updateInterface();
+                }
+            });
+
+            // Escutar mudanças em tempo real no estado de conclusão
             database.ref('completedTasks').on('value', (snapshot) => {
                 const data = snapshot.val();
                 if (data) {
                     completedTasks = new Set(data);
-                    updateProgress();
-                    if (currentView === 'timeline') {
-                        generateTimeline();
-                    } else {
-                        generateCalendar();
-                    }
+                    updateInterface();
                 }
             });
 
@@ -917,39 +1616,57 @@
         }
 
         function showFirebaseInstructions() {
-            alert(`🔥 INSTRUÇÕES FIREBASE
+            alert(`🔥 INSTRUÇÕES FIREBASE SEGURO
 
-1. Acesse: https://console.firebase.google.com
-2. Clique em "Criar um projeto"
-3. Digite um nome (ex: meu-backlog)
-4. Desabilite Analytics (opcional)
-5. Clique em "Criar projeto"
+🔒 IMPORTANTE: Proteger Credenciais!
 
-6. No painel, clique em "Realtime Database"
-7. Clique em "Criar banco de dados"
-8. Escolha um local (us-central1)
-9. Selecione "Iniciar no modo de teste"
+1. FIREBASE SETUP:
+   • Acesse: https://console.firebase.google.com
+   • Criar projeto → Realtime Database → Modo teste
 
-10. Vá em "Configurações do projeto" > "Geral"
-11. Role até "Seus apps" e clique no ícone </>
-12. Registre o app com um nome
-13. Copie as informações de configuração
+2. CRIAR ARQUIVO SEPARADO:
+   • Crie: firebase-config.js (mesma pasta do index.html)
+   • Conteúdo:
+   
+   const firebaseConfig = {
+       apiKey: "sua-api-key-aqui",
+       authDomain: "seu-projeto.firebaseapp.com", 
+       databaseURL: "https://seu-projeto-default-rtdb.firebaseio.com/",
+       projectId: "seu-projeto"
+   };
+   window.firebaseConfig = firebaseConfig;
 
-14. Substitua no código:
-- apiKey: "sua-api-key"
-- authDomain: "seu-projeto.firebaseapp.com"
-- databaseURL: "https://seu-projeto-default-rtdb.firebaseio.com/"
-- projectId: "seu-projeto"
+3. PROTEGER NO GITHUB:
+   • Crie .gitignore com:
+     firebase-config.js
+     *.env
+     .env.local
+   
+4. DEPLOY:
+   • GitHub Pages: firebase-config.js vai junto
+   • Netlify/Vercel: Use variáveis de ambiente
 
-15. Salve e recarregue a página!`);
+5. SEGURANÇA:
+   • NUNCA commite credenciais no código
+   • Use arquivo separado ou variáveis de ambiente
+   • Rotacione chaves se já foram expostas`);
         }
 
         function debugFirebaseLoad() {
             console.log('🔍 DIAGNÓSTICO FIREBASE:');
             console.log('window.firebase existe?', typeof window.firebase !== 'undefined');
             console.log('firebase global existe?', typeof firebase !== 'undefined');
+            console.log('window.firebaseConfig existe?', typeof window.firebaseConfig !== 'undefined');
             
-            // Tentar listar todos os scripts carregados
+            if (window.firebaseConfig) {
+                console.log('✅ Arquivo firebase-config.js carregado');
+                console.log('Projeto configurado:', window.firebaseConfig.projectId);
+            } else {
+                console.log('❌ Arquivo firebase-config.js NÃO encontrado');
+                console.log('💡 Crie o arquivo firebase-config.js na mesma pasta');
+            }
+            
+            // Tentar listar scripts Firebase
             const scripts = document.querySelectorAll('script[src*="firebase"]');
             console.log('Scripts Firebase encontrados:', scripts.length);
             scripts.forEach((script, index) => {
@@ -957,33 +1674,35 @@
                 console.log('Carregado?', script.complete);
             });
             
-            // Verificar se há erros de CORS ou loading
+            // Verificar script de configuração
+            const configScript = document.querySelector('script[src="firebase-config.js"]');
+            if (configScript) {
+                console.log('Script firebase-config.js:', configScript.complete ? 'carregado' : 'carregando...');
+            } else {
+                console.log('❌ Script firebase-config.js não encontrado no HTML');
+            }
+            
             if (typeof firebase === 'undefined') {
-                console.log('❌ Firebase não carregou. Possíveis causas:');
-                console.log('1. Bloqueador de anúncios/scripts');
-                console.log('2. Firewall corporativo');
-                console.log('3. Conexão lenta');
-                console.log('4. CDN indisponível');
+                console.log('❌ Firebase não carregou. Tentando recarregar...');
                 
-                // Tentar recarregar scripts manualmente
                 const script1 = document.createElement('script');
                 script1.src = 'https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js';
                 script1.onload = () => {
-                    console.log('✅ firebase-app.js carregado manualmente');
+                    console.log('✅ firebase-app.js recarregado');
                     const script2 = document.createElement('script');
                     script2.src = 'https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js';
                     script2.onload = () => {
-                        console.log('✅ firebase-database.js carregado manualmente');
+                        console.log('✅ firebase-database.js recarregado');
                         setTimeout(() => {
-                            console.log('🔄 Tentando conectar após carregamento manual...');
                             autoConnectFirebase();
                         }, 1000);
                     };
-                    script2.onerror = () => console.error('❌ Erro ao carregar firebase-database.js');
                     document.head.appendChild(script2);
                 };
-                script1.onerror = () => console.error('❌ Erro ao carregar firebase-app.js');
                 document.head.appendChild(script1);
+            } else {
+                // Firebase carregado, tentar reconectar
+                autoConnectFirebase();
             }
         }
 
@@ -1005,7 +1724,7 @@
                 statusEl.style.cursor = 'pointer';
                 statusEl.onclick = () => {
                     console.log('🔄 Tentando reconectar...');
-                    debugFirebaseLoad(); // Fazer diagnóstico antes de tentar reconectar
+                    debugFirebaseLoad();
                 };
             } else {
                 document.getElementById('setupMessage').style.display = 'none';
@@ -1126,15 +1845,23 @@
                 
                 timelineItem.innerHTML = `
                     <div class="timeline-date">${formatDate(task.date)}</div>
-                    <div class="timeline-content ${task.type} ${isCompleted ? 'completed' : ''}" onclick="toggleTask(${task.id}, '${task.title}')">
-                        <div class="task-client client-${task.type}">${task.client}</div>
+                    <div class="timeline-content ${task.type} ${isCompleted ? 'completed' : ''}" data-client="${task.client}" onclick="toggleTask(${task.id}, '${task.title}')">
+                        <div class="task-client client-${task.type}" data-client="${task.client}">${task.client}</div>
                         <div class="task-title">${task.title}</div>
                         <div class="task-description">${task.description}</div>
                         <div class="task-type">Automação CRM</div>
+                        <div class="task-id">ID: ${task.id}</div>
+                        <div class="task-actions">
+                            <button class="task-btn edit" onclick="event.stopPropagation(); openEditTaskModal(${task.id})">✏️ Editar</button>
+                            <button class="task-btn delete" onclick="event.stopPropagation(); confirmDeleteTask(${task.id})">🗑️ Excluir</button>
+                        </div>
                     </div>
                 `;
                 
                 timeline.appendChild(timelineItem);
+                
+                // Adicionar estilos para clientes personalizados
+                addCustomClientStyles(task.client, task.type);
             });
         }
 
@@ -1154,6 +1881,24 @@
             
             // Mostrar calendário por padrão
             showCalendar();
+            
+            // Event listeners para modal
+            document.getElementById('taskModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeTaskModal();
+                }
+            });
+            
+            // Teclas de atalho
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    closeTaskModal();
+                }
+                if (e.key === '+' && e.ctrlKey) {
+                    e.preventDefault();
+                    openAddTaskModal();
+                }
+            });
             
             // Aguardar mais tempo para garantir que os scripts Firebase carreguem
             console.log('⏳ Aguardando Firebase SDK carregar...');
