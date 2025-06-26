@@ -170,15 +170,21 @@
         .calendar-task {
             background: #e74c3c;
             color: white;
-            padding: 2px 6px;
+            padding: 4px 6px;
             border-radius: 10px;
-            font-size: 0.7em;
+            font-size: 0.65em;
             font-weight: bold;
             margin: 1px 0;
-            text-align: center;
+            text-align: left;
             width: 100%;
             cursor: pointer;
             transition: all 0.2s ease;
+            line-height: 1.2;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            word-wrap: break-word;
         }
 
         .calendar-task:hover {
@@ -190,6 +196,11 @@
         .calendar-task.selleto { background: #9b59b6; }
         .calendar-task.oral { background: #2ecc71; }
         .calendar-task.followup { background: #3498db; }
+        .calendar-task.crm { background: #e74c3c; }
+        .calendar-task.n8n { background: #f39c12; }
+        .calendar-task.chatbot { background: #9b59b6; }
+        .calendar-task.clinicorp { background: #2ecc71; }
+        .calendar-task.geral { background: #34495e; }
 
         .calendar-task.completed {
             opacity: 0.6;
@@ -526,6 +537,11 @@
         .selleto { border-color: #9b59b6 !important; }
         .oral { border-color: #2ecc71 !important; }
         .followup { border-color: #3498db !important; }
+        .crm { border-color: #e74c3c !important; }
+        .n8n { border-color: #f39c12 !important; }
+        .chatbot { border-color: #9b59b6 !important; }
+        .clinicorp { border-color: #2ecc71 !important; }
+        .geral { border-color: #34495e !important; }
 
         .timeline-date {
             position: absolute;
@@ -564,6 +580,11 @@
         .client-selleto { background: #9b59b6 !important; }
         .client-oral { background: #2ecc71 !important; }
         .client-followup { background: #3498db !important; }
+        .client-crm { background: #e74c3c !important; }
+        .client-n8n { background: #f39c12 !important; }
+        .client-chatbot { background: #9b59b6 !important; }
+        .client-clinicorp { background: #2ecc71 !important; }
+        .client-geral { background: #34495e !important; }
 
         .task-description {
             color: #7f8c8d;
@@ -648,13 +669,14 @@
             }
 
             .calendar-day {
-                min-height: 60px;
+                min-height: 70px;
                 padding: 4px 2px;
             }
 
             .calendar-task {
-                font-size: 0.6em;
-                padding: 1px 4px;
+                font-size: 0.55em;
+                padding: 2px 4px;
+                -webkit-line-clamp: 2;
             }
 
             .view-toggle {
@@ -783,11 +805,12 @@
                     <div class="form-group">
                         <label class="form-label">Tipo</label>
                         <select id="taskType" class="form-select">
-                            <option value="pop">POP</option>
-                            <option value="yes">YES</option>
-                            <option value="selleto">SELLETO</option>
-                            <option value="oral">ORAL</option>
-                            <option value="followup">FOLLOW-UP</option>
+                            <option value="crm">Automação CRM</option>
+                            <option value="n8n">Automação N8N</option>
+                            <option value="followup">Automação Follow-Up</option>
+                            <option value="chatbot">Automação Chatbot</option>
+                            <option value="clinicorp">Automação CliniCorp</option>
+                            <option value="geral">Automação</option>
                         </select>
                     </div>
                 </form>
@@ -811,19 +834,19 @@
     <script>
         // Dados das tarefas
         const tasks = [
-            { id: 1, date: '2025-06-30', client: 'POP', title: 'CRM - Criação de Ficha', type: 'pop', description: 'Automação N8N para criação automática de fichas no CRM' },
-            { id: 2, date: '2025-07-02', client: 'YES', title: 'CRM - Criação de Ficha', type: 'yes', description: 'Automação N8N para criação automática de fichas no CRM' },
-            { id: 3, date: '2025-07-04', client: 'YES', title: 'Confirmação de Consulta', type: 'yes', description: 'Automação N8N para confirmação automática de consultas' },
-            { id: 4, date: '2025-07-08', client: 'YES', title: 'NPS Pós-venda', type: 'yes', description: 'Automação N8N para pesquisa NPS pós-venda' },
-            { id: 5, date: '2025-07-10', client: 'ORAL Recife + Jaboatão', title: 'CRM - Criação de Ficha', type: 'oral', description: 'Automação N8N para criação automática de fichas no CRM' },
+            { id: 1, date: '2025-06-30', client: 'POP', title: 'CRM - Criação de Ficha', type: 'crm', description: 'Automação N8N para criação automática de fichas no CRM' },
+            { id: 2, date: '2025-07-02', client: 'YES', title: 'CRM - Criação de Ficha', type: 'n8n', description: 'Automação N8N para criação automática de fichas no CRM' },
+            { id: 3, date: '2025-07-04', client: 'YES', title: 'Confirmação de Consulta', type: 'n8n', description: 'Automação N8N para confirmação automática de consultas' },
+            { id: 4, date: '2025-07-08', client: 'YES', title: 'NPS Pós-venda', type: 'n8n', description: 'Automação N8N para pesquisa NPS pós-venda' },
+            { id: 5, date: '2025-07-10', client: 'ORAL Recife + Jaboatão', title: 'CRM - Criação de Ficha', type: 'clinicorp', description: 'Automação N8N para criação automática de fichas no CRM' },
             { id: 6, date: '2025-07-11', client: 'GERAL', title: 'Forma de Pagamento N8N', type: 'followup', description: 'Como colocar forma de pagamento no N8N para pausar automações caso não seja pagas' },
-            { id: 7, date: '2025-07-14', client: 'SELLETO', title: 'Confirmação de Consulta', type: 'selleto', description: 'Automação N8N para confirmação automática de consultas' },
-            { id: 8, date: '2025-07-15', client: 'POP', title: 'Confirmação de Consulta', type: 'pop', description: 'Automação N8N para confirmação automática de consultas' },
+            { id: 7, date: '2025-07-14', client: 'SELLETO', title: 'Confirmação de Consulta', type: 'chatbot', description: 'Automação N8N para confirmação automática de consultas' },
+            { id: 8, date: '2025-07-15', client: 'POP', title: 'Confirmação de Consulta', type: 'crm', description: 'Automação N8N para confirmação automática de consultas' },
             { id: 9, date: '2025-07-17', client: 'GERAL', title: 'Desenvolver Follow-Up', type: 'followup', description: 'Desenvolvimento de sistema de follow-up automático' },
-            { id: 10, date: '2025-07-25', client: 'SELLETO', title: 'NPS Pós-venda', type: 'selleto', description: 'Automação N8N para pesquisa NPS pós-venda' },
-            { id: 11, date: '2025-07-28', client: 'ORAL Recife + Jaboatão', title: 'Confirmação de Consulta', type: 'oral', description: 'Automação N8N para confirmação automática de consultas' },
-            { id: 12, date: '2025-07-28', client: 'POP', title: 'NPS Pós-venda', type: 'pop', description: 'Automação N8N para pesquisa NPS pós-venda' },
-            { id: 13, date: '2025-07-30', client: 'ORAL Recife + Jaboatão', title: 'NPS Pós-venda', type: 'oral', description: 'Automação N8N para pesquisa NPS pós-venda' }
+            { id: 10, date: '2025-07-25', client: 'SELLETO', title: 'NPS Pós-venda', type: 'chatbot', description: 'Automação N8N para pesquisa NPS pós-venda' },
+            { id: 11, date: '2025-07-28', client: 'ORAL Recife + Jaboatão', title: 'Confirmação de Consulta', type: 'clinicorp', description: 'Automação N8N para confirmação automática de consultas' },
+            { id: 12, date: '2025-07-28', client: 'POP', title: 'NPS Pós-venda', type: 'crm', description: 'Automação N8N para pesquisa NPS pós-venda' },
+            { id: 13, date: '2025-07-30', client: 'ORAL Recife + Jaboatão', title: 'NPS Pós-venda', type: 'clinicorp', description: 'Automação N8N para pesquisa NPS pós-venda' }
         ];
 
         let completedTasks = new Set();
@@ -891,7 +914,7 @@
             if (client === 'OUTRO') {
                 customClientGroup.style.display = 'block';
                 customClientInput.required = true;
-                taskTypeSelect.value = 'followup'; // Padrão para novos clientes
+                taskTypeSelect.value = 'geral'; // Padrão para novos clientes
             } else {
                 customClientGroup.style.display = 'none';
                 customClientInput.required = false;
@@ -899,10 +922,10 @@
                 
                 // Mapear cliente para tipo
                 const clientTypeMap = {
-                    'POP': 'pop',
-                    'YES': 'yes',
-                    'SELLETO': 'selleto',
-                    'ORAL Recife + Jaboatão': 'oral',
+                    'POP': 'crm',
+                    'YES': 'n8n',
+                    'SELLETO': 'chatbot',
+                    'ORAL Recife + Jaboatão': 'clinicorp',
                     'GERAL': 'followup'
                 };
                 
@@ -1146,7 +1169,7 @@
                 return a & a;
             }, 0);
             
-            const types = ['pop', 'yes', 'selleto', 'oral', 'followup'];
+            const types = ['crm', 'n8n', 'followup', 'chatbot', 'clinicorp', 'geral'];
             const index = Math.abs(hash) % types.length;
             return types[index];
         }
@@ -1316,13 +1339,16 @@
                         taskElement.classList.add('completed');
                     }
                     taskElement.innerHTML = `
-                        <div onclick="event.stopPropagation(); toggleTask(${task.id}, '${task.title}')">${task.client}</div>
+                        <div onclick="event.stopPropagation(); toggleTask(${task.id}, '${task.title}', '${task.client}')" style="flex: 1;">
+                            <div style="font-weight: bold; margin-bottom: 2px;">${task.client}</div>
+                            <div style="font-size: 0.9em; opacity: 0.95;">${task.title}</div>
+                        </div>
                         <div class="task-actions" style="margin-top: 2px;">
                             <button class="task-btn edit" onclick="event.stopPropagation(); openEditTaskModal(${task.id})" title="Editar">✏️</button>
                             <button class="task-btn delete" onclick="event.stopPropagation(); confirmDeleteTask(${task.id})" title="Excluir">🗑️</button>
                         </div>
                     `;
-                    taskElement.title = `${task.title} - ${task.description}`;
+                    taskElement.title = `${task.client} - ${task.title}\n${task.description}`;
                     dayElement.appendChild(taskElement);
                     
                     // Adicionar estilos para clientes personalizados
@@ -1521,13 +1547,7 @@
         }
 
         function autoFillConfig() {
-            // Preenche automaticamente com os dados do usuário
-            document.getElementById('apiKey').value = 'AIzaSyCxNtLwSZJ39JSD7188TfvzYrDwUH2dBvg';
-            document.getElementById('authDomain').value = 'backlog-e73b7.firebaseapp.com';
-            document.getElementById('databaseURL').value = 'https://backlog-e73b7-default-rtdb.firebaseio.com/';
-            document.getElementById('projectId').value = 'backlog-e73b7';
-            
-            alert('✅ Configuração preenchida! Agora clique em "Conectar Firebase"');
+            alert('🔒 SEGURANÇA: Para proteger suas credenciais, crie o arquivo firebase-config.js com suas configurações.\n\n📋 Clique no botão "Ver Instruções Completas" para o passo a passo!');
         }
 
         function testConnection() {
@@ -1733,10 +1753,20 @@
             }
         }
 
-        function toggleTask(taskId, taskTitle) {
+        function toggleTask(taskId, taskTitle, taskClient = null) {
             if (!connected) {
                 // Se não estiver conectado, funcionar localmente
                 console.log('⚠️ Funcionando offline...');
+            }
+
+            // Buscar informações da tarefa se não fornecidas
+            if (!taskClient) {
+                const task = tasks.find(t => t.id === taskId);
+                if (task) {
+                    taskClient = task.client;
+                } else {
+                    taskClient = 'Cliente Desconhecido';
+                }
             }
 
             // Verificar o estado ATUAL da tarefa (antes de alterar)
@@ -1769,6 +1799,7 @@
                 const activity = {
                     action: wasCompleted ? 'reopened' : 'completed',
                     task: taskTitle,
+                    client: taskClient,
                     timestamp: Date.now(),
                     user: 'Usuário ' + Math.floor(Math.random() * 1000)
                 };
@@ -1779,6 +1810,7 @@
                 const activity = {
                     action: wasCompleted ? 'reopened' : 'completed',
                     task: taskTitle,
+                    client: taskClient,
                     timestamp: Date.now(),
                     user: 'Usuário Local'
                 };
@@ -1809,8 +1841,11 @@
             
             const time = new Date(activity.timestamp).toLocaleTimeString();
             
+            // Incluir cliente se disponível
+            const clientInfo = activity.client ? ` (${activity.client})` : '';
+            
             activityItem.innerHTML = `
-                <div>${icon} ${action}: <strong>${activity.task}</strong></div>
+                <div>${icon} ${action}: <strong>${activity.task}</strong>${clientInfo}</div>
                 <div class="activity-time">por ${activity.user} às ${time}</div>
             `;
             
@@ -1837,19 +1872,30 @@
             const timeline = document.getElementById('timeline');
             timeline.innerHTML = '';
 
+            // Mapeamento dos tipos para seus nomes completos
+            const typeNames = {
+                'crm': 'Automação CRM',
+                'n8n': 'Automação N8N',
+                'followup': 'Automação Follow-Up',
+                'chatbot': 'Automação Chatbot',
+                'clinicorp': 'Automação CliniCorp',
+                'geral': 'Automação'
+            };
+
             tasks.forEach((task, index) => {
                 const timelineItem = document.createElement('div');
                 timelineItem.className = 'timeline-item';
                 
                 const isCompleted = completedTasks.has(task.id);
+                const typeName = typeNames[task.type] || 'Automação';
                 
                 timelineItem.innerHTML = `
                     <div class="timeline-date">${formatDate(task.date)}</div>
-                    <div class="timeline-content ${task.type} ${isCompleted ? 'completed' : ''}" data-client="${task.client}" onclick="toggleTask(${task.id}, '${task.title}')">
+                    <div class="timeline-content ${task.type} ${isCompleted ? 'completed' : ''}" data-client="${task.client}" onclick="toggleTask(${task.id}, '${task.title}', '${task.client}')">
                         <div class="task-client client-${task.type}" data-client="${task.client}">${task.client}</div>
                         <div class="task-title">${task.title}</div>
                         <div class="task-description">${task.description}</div>
-                        <div class="task-type">Automação CRM</div>
+                        <div class="task-type">${typeName}</div>
                         <div class="task-id">ID: ${task.id}</div>
                         <div class="task-actions">
                             <button class="task-btn edit" onclick="event.stopPropagation(); openEditTaskModal(${task.id})">✏️ Editar</button>
