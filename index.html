@@ -1,0 +1,1167 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Backlog de Automações - Sincronizado</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            color: #2c3e50;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #3498db, #9b59b6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .view-toggle {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+            gap: 10px;
+        }
+
+        .view-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .view-btn.active {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .view-btn:not(.active) {
+            background: #ecf0f1;
+            color: #7f8c8d;
+        }
+
+        .view-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .calendar-container {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin: 20px 0;
+            display: none;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .calendar-nav {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .calendar-nav:hover {
+            transform: scale(1.05);
+        }
+
+        .calendar-title {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .calendar-day-header {
+            text-align: center;
+            font-weight: bold;
+            padding: 15px 5px;
+            background: #34495e;
+            color: white;
+            border-radius: 8px;
+            font-size: 0.9em;
+        }
+
+        .calendar-day {
+            aspect-ratio: 1;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 8px 4px;
+            border: 2px solid #ecf0f1;
+            background: white;
+            position: relative;
+            min-height: 80px;
+            transition: all 0.3s ease;
+        }
+
+        .calendar-day:hover {
+            transform: scale(1.02);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .calendar-day.today {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            font-weight: bold;
+        }
+
+        .calendar-day.other-month {
+            color: #bdc3c7;
+            background: #f8f9fa;
+        }
+
+        .calendar-day-number {
+            font-weight: bold;
+            margin-bottom: 4px;
+            font-size: 0.9em;
+        }
+
+        .calendar-task {
+            background: #e74c3c;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 0.7em;
+            font-weight: bold;
+            margin: 1px 0;
+            text-align: center;
+            width: 100%;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .calendar-task:hover {
+            transform: scale(1.05);
+        }
+
+        .calendar-task.pop { background: #e74c3c; }
+        .calendar-task.yes { background: #f39c12; }
+        .calendar-task.selleto { background: #9b59b6; }
+        .calendar-task.oral { background: #2ecc71; }
+        .calendar-task.followup { background: #3498db; }
+
+        .calendar-task.completed {
+            opacity: 0.6;
+            text-decoration: line-through;
+        }
+
+        .sync-status {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .sync-connected {
+            background: #2ecc71;
+            color: white;
+        }
+
+        .sync-disconnected {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .sync-connecting {
+            background: #f39c12;
+            color: white;
+        }
+
+
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #ecf0f1;
+            border-radius: 4px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3498db, #2ecc71);
+            border-radius: 4px;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .timeline {
+            position: relative;
+            margin: 30px 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: linear-gradient(to bottom, #3498db, #2ecc71);
+            transform: translateX(-50%);
+            border-radius: 2px;
+        }
+
+        .timeline-item {
+            display: flex;
+            margin-bottom: 40px;
+            position: relative;
+            align-items: center;
+        }
+
+        .timeline-item:nth-child(even) {
+            flex-direction: row-reverse;
+        }
+
+        .timeline-content {
+            flex: 1;
+            background: white;
+            padding: 25px;
+            margin-top: 20px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            margin-left: 40px;
+            margin-right: 40px;
+            position: relative;
+            border-left: 5px solid;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+
+        .timeline-content:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .timeline-item:nth-child(even) .timeline-content {
+            border-left: 5px solid;
+            border-right: none;
+        }
+
+        .pop { border-color: #e74c3c !important; }
+        .yes { border-color: #f39c12 !important; }
+        .selleto { border-color: #9b59b6 !important; }
+        .oral { border-color: #2ecc71 !important; }
+        .followup { border-color: #3498db !important; }
+
+        .timeline-date {
+            position: absolute;
+            left: 50%;
+            top: -15px;
+            transform: translateX(-50%);
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-weight: bold;
+            font-size: 1em;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            z-index: 10;
+        }
+
+        .task-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+
+        .task-client {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 10px;
+        }
+
+        .client-pop { background: #e74c3c !important; }
+        .client-yes { background: #f39c12 !important; }
+        .client-selleto { background: #9b59b6 !important; }
+        .client-oral { background: #2ecc71 !important; }
+        .client-followup { background: #3498db !important; }
+
+        .task-description {
+            color: #7f8c8d;
+            line-height: 1.6;
+        }
+
+        .task-type {
+            display: inline-block;
+            background: #ecf0f1;
+            color: #34495e;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            margin-top: 10px;
+        }
+
+        .completed {
+            opacity: 0.7;
+            position: relative;
+        }
+
+        .completed::after {
+            content: '✓ CONCLUÍDO';
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #2ecc71;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.7em;
+            font-weight: bold;
+        }
+
+        .activity-log {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .activity-item {
+            padding: 8px 0;
+            border-bottom: 1px solid #ddd;
+            font-size: 0.9em;
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-time {
+            color: #7f8c8d;
+            font-size: 0.8em;
+        }
+
+        @media (max-width: 768px) {
+            .timeline::before {
+                left: 30px;
+            }
+            
+            .timeline-item {
+                flex-direction: column !important;
+                align-items: flex-start;
+            }
+            
+            .timeline-content {
+                margin: 20px 0 0 60px;
+            }
+            
+            .timeline-date {
+                left: 50%;
+                top: -12px;
+                padding: 8px 16px;
+                font-size: 0.8em;
+            }
+
+            .calendar-grid {
+                gap: 5px;
+            }
+
+            .calendar-day {
+                min-height: 60px;
+                padding: 4px 2px;
+            }
+
+            .calendar-task {
+                font-size: 0.6em;
+                padding: 1px 4px;
+            }
+
+            .view-toggle {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .view-btn {
+                width: 200px;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Backlog de Automações - Sincronizado</h1>
+            <p>Demandas Raquel - Cronograma de Desenvolvimento</p>
+            <div class="sync-status sync-connecting" id="syncStatus">
+                🟡 Conectando automaticamente...
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressBar"></div>
+            </div>
+            <p id="progressText">0% Concluído</p>
+            
+            <div class="view-toggle">
+                <button class="view-btn" id="timelineBtn" onclick="showTimeline()">
+                    📋 Timeline
+                </button>
+                <button class="view-btn active" id="calendarBtn" onclick="showCalendar()">
+                    📅 Agenda
+                </button>
+            </div>
+        </div>
+
+
+
+        <div class="activity-log" id="activityLog" style="display: none;">
+            <h4>📊 Atividade em Tempo Real</h4>
+            <div id="activityList"></div>
+        </div>
+
+        <div class="activity-log" id="setupMessage" style="display: none; background: #fff3cd; border: 1px solid #ffeaa7;">
+            <h4>🔧 Configuração Necessária</h4>
+            <p>Para sincronizar automaticamente, você precisa configurar seu próprio Firebase:</p>
+            <ol>
+                <li>Vá para <a href="https://console.firebase.google.com" target="_blank">Firebase Console</a></li>
+                <li>Crie um novo projeto</li>
+                <li>Habilite Realtime Database</li>
+                <li>Configure as regras para permitir leitura/escrita</li>
+                <li>Substitua a configuração no código</li>
+            </ol>
+            <button onclick="showFirebaseInstructions()" style="background: #3498db; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">
+                📋 Ver Instruções Detalhadas
+            </button>
+        </div>
+
+        <div class="calendar-container" id="calendarContainer">
+            <div class="calendar-header">
+                <button class="calendar-nav" onclick="previousMonth()">❮ Anterior</button>
+                <div class="calendar-title" id="calendarTitle">Junho 2025</div>
+                <button class="calendar-nav" onclick="nextMonth()">Próximo ❯</button>
+            </div>
+            <div class="calendar-grid" id="calendarGrid">
+                <!-- Calendário será gerado dinamicamente -->
+            </div>
+        </div>
+
+        <div class="timeline" id="timeline">
+            <!-- Timeline será gerada dinamicamente -->
+        </div>
+    </div>
+
+    <!-- Firebase SDK v8 (mais compatível) -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+    <script>
+        // Dados das tarefas
+        const tasks = [
+            { id: 1, date: '2025-06-30', client: 'POP', title: 'CRM - Criação de Ficha', type: 'pop', description: 'Automação N8N para criação automática de fichas no CRM' },
+            { id: 2, date: '2025-07-02', client: 'YES', title: 'CRM - Criação de Ficha', type: 'yes', description: 'Automação N8N para criação automática de fichas no CRM' },
+            { id: 3, date: '2025-07-04', client: 'YES', title: 'Confirmação de Consulta', type: 'yes', description: 'Automação N8N para confirmação automática de consultas' },
+            { id: 4, date: '2025-07-08', client: 'YES', title: 'NPS Pós-venda', type: 'yes', description: 'Automação N8N para pesquisa NPS pós-venda' },
+            { id: 5, date: '2025-07-10', client: 'ORAL Recife + Jaboatão', title: 'CRM - Criação de Ficha', type: 'oral', description: 'Automação N8N para criação automática de fichas no CRM' },
+            { id: 6, date: '2025-07-11', client: 'GERAL', title: 'Forma de Pagamento N8N', type: 'followup', description: 'Como colocar forma de pagamento no N8N para pausar automações caso não seja pagas' },
+            { id: 7, date: '2025-07-14', client: 'SELLETO', title: 'Confirmação de Consulta', type: 'selleto', description: 'Automação N8N para confirmação automática de consultas' },
+            { id: 8, date: '2025-07-15', client: 'POP', title: 'Confirmação de Consulta', type: 'pop', description: 'Automação N8N para confirmação automática de consultas' },
+            { id: 9, date: '2025-07-17', client: 'GERAL', title: 'Desenvolver Follow-Up', type: 'followup', description: 'Desenvolvimento de sistema de follow-up automático' },
+            { id: 10, date: '2025-07-25', client: 'SELLETO', title: 'NPS Pós-venda', type: 'selleto', description: 'Automação N8N para pesquisa NPS pós-venda' },
+            { id: 11, date: '2025-07-28', client: 'ORAL Recife + Jaboatão', title: 'Confirmação de Consulta', type: 'oral', description: 'Automação N8N para confirmação automática de consultas' },
+            { id: 12, date: '2025-07-28', client: 'POP', title: 'NPS Pós-venda', type: 'pop', description: 'Automação N8N para pesquisa NPS pós-venda' },
+            { id: 13, date: '2025-07-30', client: 'ORAL Recife + Jaboatão', title: 'NPS Pós-venda', type: 'oral', description: 'Automação N8N para pesquisa NPS pós-venda' }
+        ];
+
+        let completedTasks = new Set();
+        let database = null;
+        let connected = false;
+        let currentDate = new Date();
+        let currentView = 'calendar'; // ou 'timeline'
+
+        // Configuração Firebase - SUBSTITUA PELA SUA CONFIGURAÇÃO
+        const firebaseConfig = {
+            apiKey: "SUBSTITUA-PELA-SUA-API-KEY",
+            authDomain: "seu-projeto.firebaseapp.com",
+            databaseURL: "https://seu-projeto-default-rtdb.firebaseio.com/",
+            projectId: "seu-projeto"
+        };
+
+        // Configuração de demonstração (para que funcione para o criador)
+        const workingConfig = {
+            apiKey: "AIzaSyCxNtLwSZJ39JSD7188TfvzYrDwUH2dBvg",
+            authDomain: "backlog-e73b7.firebaseapp.com", 
+            databaseURL: "https://backlog-e73b7-default-rtdb.firebaseio.com/",
+            projectId: "backlog-e73b7"
+        };
+
+        // Funções de visualização
+        function showTimeline() {
+            currentView = 'timeline';
+            document.getElementById('timelineBtn').classList.add('active');
+            document.getElementById('calendarBtn').classList.remove('active');
+            document.getElementById('timeline').style.display = 'block';
+            document.getElementById('calendarContainer').style.display = 'none';
+        }
+
+        function showCalendar() {
+            currentView = 'calendar';
+            document.getElementById('calendarBtn').classList.add('active');
+            document.getElementById('timelineBtn').classList.remove('active');
+            document.getElementById('timeline').style.display = 'none';
+            document.getElementById('calendarContainer').style.display = 'block';
+            generateCalendar();
+        }
+
+        function previousMonth() {
+            currentDate.setMonth(currentDate.getMonth() - 1);
+            generateCalendar();
+        }
+
+        function nextMonth() {
+            currentDate.setMonth(currentDate.getMonth() + 1);
+            generateCalendar();
+        }
+
+        function generateCalendar() {
+            const calendarGrid = document.getElementById('calendarGrid');
+            const calendarTitle = document.getElementById('calendarTitle');
+            
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            
+            const months = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+                           'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+            
+            calendarTitle.textContent = `${months[month]} ${year}`;
+            
+            // Limpar grid
+            calendarGrid.innerHTML = '';
+            
+            // Headers dos dias da semana
+            const dayHeaders = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+            dayHeaders.forEach(day => {
+                const header = document.createElement('div');
+                header.className = 'calendar-day-header';
+                header.textContent = day;
+                calendarGrid.appendChild(header);
+            });
+            
+            // Primeiro dia do mês e último dia
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 0);
+            const today = new Date();
+            
+            // Dias do mês anterior para preencher início
+            const startDate = new Date(firstDay);
+            startDate.setDate(startDate.getDate() - firstDay.getDay());
+            
+            // Gerar 42 dias (6 semanas)
+            for (let i = 0; i < 42; i++) {
+                const cellDate = new Date(startDate);
+                cellDate.setDate(startDate.getDate() + i);
+                
+                const dayElement = document.createElement('div');
+                dayElement.className = 'calendar-day';
+                
+                // Verificar se é do mês atual
+                const isCurrentMonth = cellDate.getMonth() === month;
+                const isToday = cellDate.toDateString() === today.toDateString();
+                
+                if (!isCurrentMonth) {
+                    dayElement.classList.add('other-month');
+                }
+                
+                if (isToday) {
+                    dayElement.classList.add('today');
+                }
+                
+                // Número do dia
+                const dayNumber = document.createElement('div');
+                dayNumber.className = 'calendar-day-number';
+                dayNumber.textContent = cellDate.getDate();
+                dayElement.appendChild(dayNumber);
+                
+                // Buscar tarefas para este dia
+                const dateStr = cellDate.toISOString().split('T')[0];
+                const dayTasks = tasks.filter(task => task.date === dateStr);
+                
+                // Adicionar tarefas
+                dayTasks.forEach(task => {
+                    const taskElement = document.createElement('div');
+                    taskElement.className = `calendar-task ${task.type}`;
+                    if (completedTasks.has(task.id)) {
+                        taskElement.classList.add('completed');
+                    }
+                    taskElement.textContent = task.client;
+                    taskElement.title = `${task.title} - ${task.description}`;
+                    taskElement.onclick = (e) => {
+                        e.stopPropagation();
+                        toggleTask(task.id, task.title);
+                        setTimeout(() => generateCalendar(), 100); // Atualizar calendário
+                    };
+                    dayElement.appendChild(taskElement);
+                });
+                
+                calendarGrid.appendChild(dayElement);
+            }
+        }
+
+        // Conectar automaticamente ao Firebase
+        function autoConnectFirebase() {
+            console.log('🚀 Iniciando conexão automática...');
+            console.log('Verificando Firebase SDK...');
+            console.log('typeof firebase:', typeof firebase);
+            console.log('window.firebase:', window.firebase);
+            
+            updateSyncStatus('connecting', 'Conectando automaticamente...');
+            
+            // Verificar se Firebase SDK está carregado
+            if (typeof firebase === 'undefined') {
+                console.error('❌ Firebase SDK não carregado');
+                console.log('Tentando aguardar mais tempo para carregar...');
+                
+                // Tentar aguardar mais tempo
+                setTimeout(() => {
+                    console.log('Segunda tentativa - typeof firebase:', typeof firebase);
+                    if (typeof firebase === 'undefined') {
+                        updateSyncStatus('disconnected', 'Firebase SDK falhou ao carregar');
+                        console.error('❌ Firebase SDK definitivamente não carregou');
+                        return;
+                    } else {
+                        console.log('✅ Firebase SDK carregado na segunda tentativa!');
+                        continueConnection();
+                    }
+                }, 3000);
+                return;
+            }
+            
+            console.log('✅ Firebase SDK carregado!');
+            continueConnection();
+        }
+
+        function continueConnection() {
+            // Usar configuração de demonstração se a padrão não estiver configurada
+            let configToUse = workingConfig;
+            if (firebaseConfig.apiKey && !firebaseConfig.apiKey.includes('SUBSTITUA')) {
+                configToUse = firebaseConfig;
+            }
+            
+            console.log('Configuração a usar:', configToUse.projectId);
+            
+            // Verificar se é configuração placeholder
+            if (configToUse.apiKey.includes('SUBSTITUA') || configToUse.apiKey.includes('Dummy')) {
+                console.log('⚠️ Configuração não definida');
+                setTimeout(() => {
+                    updateSyncStatus('disconnected', 'Configure seu Firebase para sincronizar');
+                }, 2000);
+                return;
+            }
+            
+            try {
+                // Verificar se Firebase já foi inicializado
+                if (firebase.apps && firebase.apps.length > 0) {
+                    console.log('Firebase já inicializado, limpando...');
+                    firebase.apps.forEach(app => app.delete());
+                }
+                
+                console.log('Inicializando Firebase...');
+                firebase.initializeApp(configToUse);
+                database = firebase.database();
+                console.log('✅ Firebase inicializado!');
+                
+                // Timeout para evitar ficar preso em "conectando"
+                setTimeout(() => {
+                    if (!connected) {
+                        console.log('⚠️ Timeout, testando conexão...');
+                        // Tentar escrever algo para testar
+                        database.ref('connection_test').set({
+                            timestamp: Date.now(),
+                            status: 'timeout_test'
+                        }).then(() => {
+                            console.log('✅ Teste de timeout bem-sucedido');
+                            connected = true;
+                            updateSyncStatus('connected', 'Conectado e Sincronizando');
+                            setupRealtimeSync();
+                            document.getElementById('activityLog').style.display = 'block';
+                        }).catch((error) => {
+                            console.error('❌ Falha no teste de timeout:', error);
+                            updateSyncStatus('disconnected', 'Falha na Conexão');
+                        });
+                    }
+                }, 5000);
+                
+                // Monitorar conexão
+                database.ref('.info/connected').on('value', (snap) => {
+                    console.log('Firebase conectado:', snap.val());
+                    if (snap.val() === true && !connected) {
+                        connected = true;
+                        console.log('✅ Conectado ao Firebase!');
+                        updateSyncStatus('connected', 'Conectado e Sincronizando');
+                        setupRealtimeSync();
+                        document.getElementById('activityLog').style.display = 'block';
+                        
+                        // Testar escrita
+                        database.ref('connection_test').set({
+                            timestamp: Date.now(),
+                            status: 'connected'
+                        }).then(() => {
+                            console.log('✅ Escrita funcionando');
+                        }).catch((error) => {
+                            console.error('❌ Erro na escrita:', error);
+                            updateSyncStatus('connected', 'Conectado (Somente Leitura)');
+                        });
+                        
+                    } else if (snap.val() === false && connected) {
+                        connected = false;
+                        console.log('❌ Desconectado');
+                        updateSyncStatus('disconnected', 'Conexão Perdida');
+                    }
+                });
+
+            } catch (error) {
+                console.error('❌ Erro ao conectar:', error);
+                updateSyncStatus('disconnected', 'Erro na Conexão: ' + error.message);
+            }
+        }
+
+        function connectFirebase() {
+            const apiKey = document.getElementById('apiKey').value;
+            const authDomain = document.getElementById('authDomain').value;
+            const databaseURL = document.getElementById('databaseURL').value;
+            const projectId = document.getElementById('projectId').value;
+
+            if (!apiKey || !authDomain || !databaseURL || !projectId) {
+                alert('Por favor, preencha todos os campos de configuração.');
+                return;
+            }
+
+            // Validar formato da URL do banco
+            if (!databaseURL.includes('firebaseio.com')) {
+                alert('❌ URL do banco deve terminar com firebaseio.com/');
+                return;
+            }
+
+            const firebaseConfig = {
+                apiKey: apiKey,
+                authDomain: authDomain,
+                databaseURL: databaseURL,
+                projectId: projectId
+            };
+
+            try {
+                updateSyncStatus('connecting', 'Conectando...');
+                
+                // Verificar se já existe uma instância do Firebase
+                if (firebase.apps.length > 0) {
+                    firebase.apps.forEach(app => app.delete());
+                }
+                
+                firebase.initializeApp(firebaseConfig);
+                database = firebase.database();
+                
+                // Testar conexão
+                database.ref('.info/connected').on('value', (snap) => {
+                    if (snap.val() === true) {
+                        connected = true;
+                        updateSyncStatus('connected', 'Conectado e Sincronizando');
+                        setupRealtimeSync();
+                        document.getElementById('setupInstructions').style.display = 'none';
+                        document.getElementById('activityLog').style.display = 'block';
+                        
+                        // Testar escrita
+                        database.ref('test').set({
+                            message: 'Conexão estabelecida com sucesso!',
+                            timestamp: Date.now()
+                        }).then(() => {
+                            console.log('✅ Teste de escrita bem-sucedido');
+                        }).catch((error) => {
+                            console.error('❌ Erro no teste de escrita:', error);
+                            alert('⚠️ Conectado, mas sem permissão de escrita. Verifique as regras do banco de dados.');
+                        });
+                        
+                    } else {
+                        connected = false;
+                        updateSyncStatus('disconnected', 'Conexão Perdida');
+                    }
+                });
+
+            } catch (error) {
+                console.error('Erro ao conectar Firebase:', error);
+                updateSyncStatus('disconnected', 'Erro na Conexão: ' + error.message);
+                
+                let errorMsg = 'Erro ao conectar com Firebase:\n\n';
+                if (error.code === 'auth/invalid-api-key') {
+                    errorMsg += '❌ API Key inválida. Verifique se copiou corretamente.';
+                } else if (error.code === 'auth/invalid-project-id') {
+                    errorMsg += '❌ Project ID inválido. Verifique se copiou corretamente.';
+                } else {
+                    errorMsg += `❌ ${error.message}\n\nVerifique se:\n- Todos os campos estão corretos\n- O banco de dados está criado\n- As regras permitem leitura/escrita`;
+                }
+                
+                alert(errorMsg);
+            }
+        }
+
+        function autoFillConfig() {
+            // Preenche automaticamente com os dados do usuário
+            document.getElementById('apiKey').value = 'AIzaSyCxNtLwSZJ39JSD7188TfvzYrDwUH2dBvg';
+            document.getElementById('authDomain').value = 'backlog-e73b7.firebaseapp.com';
+            document.getElementById('databaseURL').value = 'https://backlog-e73b7-default-rtdb.firebaseio.com/';
+            document.getElementById('projectId').value = 'backlog-e73b7';
+            
+            alert('✅ Configuração preenchida! Agora clique em "Conectar Firebase"');
+        }
+
+        function testConnection() {
+            if (!database) {
+                alert('Primeiro conecte com Firebase.');
+                return;
+            }
+
+            database.ref('test').set({
+                message: 'Teste de conexão',
+                timestamp: Date.now()
+            }).then(() => {
+                alert('✅ Conexão testada com sucesso!');
+            }).catch((error) => {
+                console.error('Erro no teste:', error);
+                alert('❌ Erro no teste de conexão.');
+            });
+        }
+
+        function setupRealtimeSync() {
+            // Carregar estado atual
+            database.ref('completedTasks').once('value', (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    completedTasks = new Set(data);
+                    updateProgress();
+                    if (currentView === 'timeline') {
+                        generateTimeline();
+                    } else {
+                        generateCalendar();
+                    }
+                }
+            });
+
+            // Escutar mudanças em tempo real
+            database.ref('completedTasks').on('value', (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    completedTasks = new Set(data);
+                    updateProgress();
+                    if (currentView === 'timeline') {
+                        generateTimeline();
+                    } else {
+                        generateCalendar();
+                    }
+                }
+            });
+
+            // Escutar atividades
+            database.ref('activities').limitToLast(10).on('child_added', (snapshot) => {
+                const activity = snapshot.val();
+                addActivityLog(activity);
+            });
+        }
+
+        function showFirebaseInstructions() {
+            alert(`🔥 INSTRUÇÕES FIREBASE
+
+1. Acesse: https://console.firebase.google.com
+2. Clique em "Criar um projeto"
+3. Digite um nome (ex: meu-backlog)
+4. Desabilite Analytics (opcional)
+5. Clique em "Criar projeto"
+
+6. No painel, clique em "Realtime Database"
+7. Clique em "Criar banco de dados"
+8. Escolha um local (us-central1)
+9. Selecione "Iniciar no modo de teste"
+
+10. Vá em "Configurações do projeto" > "Geral"
+11. Role até "Seus apps" e clique no ícone </>
+12. Registre o app com um nome
+13. Copie as informações de configuração
+
+14. Substitua no código:
+- apiKey: "sua-api-key"
+- authDomain: "seu-projeto.firebaseapp.com"
+- databaseURL: "https://seu-projeto-default-rtdb.firebaseio.com/"
+- projectId: "seu-projeto"
+
+15. Salve e recarregue a página!`);
+        }
+
+        function debugFirebaseLoad() {
+            console.log('🔍 DIAGNÓSTICO FIREBASE:');
+            console.log('window.firebase existe?', typeof window.firebase !== 'undefined');
+            console.log('firebase global existe?', typeof firebase !== 'undefined');
+            
+            // Tentar listar todos os scripts carregados
+            const scripts = document.querySelectorAll('script[src*="firebase"]');
+            console.log('Scripts Firebase encontrados:', scripts.length);
+            scripts.forEach((script, index) => {
+                console.log(`Script ${index + 1}:`, script.src);
+                console.log('Carregado?', script.complete);
+            });
+            
+            // Verificar se há erros de CORS ou loading
+            if (typeof firebase === 'undefined') {
+                console.log('❌ Firebase não carregou. Possíveis causas:');
+                console.log('1. Bloqueador de anúncios/scripts');
+                console.log('2. Firewall corporativo');
+                console.log('3. Conexão lenta');
+                console.log('4. CDN indisponível');
+                
+                // Tentar recarregar scripts manualmente
+                const script1 = document.createElement('script');
+                script1.src = 'https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js';
+                script1.onload = () => {
+                    console.log('✅ firebase-app.js carregado manualmente');
+                    const script2 = document.createElement('script');
+                    script2.src = 'https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js';
+                    script2.onload = () => {
+                        console.log('✅ firebase-database.js carregado manualmente');
+                        setTimeout(() => {
+                            console.log('🔄 Tentando conectar após carregamento manual...');
+                            autoConnectFirebase();
+                        }, 1000);
+                    };
+                    script2.onerror = () => console.error('❌ Erro ao carregar firebase-database.js');
+                    document.head.appendChild(script2);
+                };
+                script1.onerror = () => console.error('❌ Erro ao carregar firebase-app.js');
+                document.head.appendChild(script1);
+            }
+        }
+
+        function updateSyncStatus(status, text) {
+            const statusEl = document.getElementById('syncStatus');
+            statusEl.className = `sync-status sync-${status}`;
+            
+            const icons = {
+                connected: '🟢',
+                connecting: '🟡',
+                disconnected: '🔴'
+            };
+            
+            statusEl.textContent = `${icons[status]} ${text}`;
+            
+            // Mostrar mensagem de setup se desconectado
+            if (status === 'disconnected') {
+                document.getElementById('setupMessage').style.display = 'block';
+                statusEl.style.cursor = 'pointer';
+                statusEl.onclick = () => {
+                    console.log('🔄 Tentando reconectar...');
+                    debugFirebaseLoad(); // Fazer diagnóstico antes de tentar reconectar
+                };
+            } else {
+                document.getElementById('setupMessage').style.display = 'none';
+                statusEl.style.cursor = 'default';
+                statusEl.onclick = null;
+            }
+        }
+
+        function toggleTask(taskId, taskTitle) {
+            if (!connected) {
+                // Se não estiver conectado, funcionar localmente
+                console.log('⚠️ Funcionando offline...');
+            }
+
+            // Verificar o estado ATUAL da tarefa (antes de alterar)
+            const wasCompleted = completedTasks.has(taskId);
+            
+            console.log(`🔄 Toggle tarefa ${taskId}: estava concluída = ${wasCompleted}`);
+            
+            // Alterar o estado
+            if (wasCompleted) {
+                completedTasks.delete(taskId);
+                console.log(`✅ Tarefa ${taskId} removida de concluídas`);
+            } else {
+                completedTasks.add(taskId);
+                console.log(`✅ Tarefa ${taskId} adicionada às concluídas`);
+            }
+
+            // ⭐ IMPORTANTE: Atualizar a interface imediatamente
+            updateProgress();
+            if (currentView === 'timeline') {
+                generateTimeline();
+            } else {
+                generateCalendar();
+            }
+            
+            // Salvar no Firebase se conectado
+            if (connected && database) {
+                database.ref('completedTasks').set([...completedTasks]);
+                
+                // Registrar atividade com o estado CORRETO
+                const activity = {
+                    action: wasCompleted ? 'reopened' : 'completed',
+                    task: taskTitle,
+                    timestamp: Date.now(),
+                    user: 'Usuário ' + Math.floor(Math.random() * 1000)
+                };
+
+                database.ref('activities').push(activity);
+            } else {
+                // Simular atividade local
+                const activity = {
+                    action: wasCompleted ? 'reopened' : 'completed',
+                    task: taskTitle,
+                    timestamp: Date.now(),
+                    user: 'Usuário Local'
+                };
+                addActivityLog(activity);
+            }
+            
+            console.log('🎯 Estado atual das tarefas concluídas:', [...completedTasks]);
+        }
+
+        function addActivityLog(activity) {
+            const activityList = document.getElementById('activityList');
+            const activityItem = document.createElement('div');
+            activityItem.className = 'activity-item';
+            
+            // Corrigir o texto das ações
+            let action, icon;
+            if (activity.action === 'completed') {
+                action = 'Concluiu';
+                icon = '✅';
+            } else if (activity.action === 'reopened') {
+                action = 'Reabriu';
+                icon = '🔄';
+            } else {
+                // Compatibilidade com logs antigos
+                action = activity.action === 'unmarked' ? 'Reabriu' : 'Concluiu';
+                icon = activity.action === 'unmarked' ? '🔄' : '✅';
+            }
+            
+            const time = new Date(activity.timestamp).toLocaleTimeString();
+            
+            activityItem.innerHTML = `
+                <div>${icon} ${action}: <strong>${activity.task}</strong></div>
+                <div class="activity-time">por ${activity.user} às ${time}</div>
+            `;
+            
+            activityList.insertBefore(activityItem, activityList.firstChild);
+            
+            // Manter apenas 10 atividades
+            while (activityList.children.length > 10) {
+                activityList.removeChild(activityList.lastChild);
+            }
+        }
+
+        function updateProgress() {
+            const progressBar = document.getElementById('progressBar');
+            const progressText = document.getElementById('progressText');
+            const totalTasks = tasks.length;
+            const completedCount = completedTasks.size;
+            
+            const progress = (completedCount / totalTasks) * 100;
+            progressBar.style.width = progress + '%';
+            progressText.textContent = Math.round(progress) + '% Concluído (' + completedCount + '/' + totalTasks + ')';
+        }
+
+        function generateTimeline() {
+            const timeline = document.getElementById('timeline');
+            timeline.innerHTML = '';
+
+            tasks.forEach((task, index) => {
+                const timelineItem = document.createElement('div');
+                timelineItem.className = 'timeline-item';
+                
+                const isCompleted = completedTasks.has(task.id);
+                
+                timelineItem.innerHTML = `
+                    <div class="timeline-date">${formatDate(task.date)}</div>
+                    <div class="timeline-content ${task.type} ${isCompleted ? 'completed' : ''}" onclick="toggleTask(${task.id}, '${task.title}')">
+                        <div class="task-client client-${task.type}">${task.client}</div>
+                        <div class="task-title">${task.title}</div>
+                        <div class="task-description">${task.description}</div>
+                        <div class="task-type">Automação CRM</div>
+                    </div>
+                `;
+                
+                timeline.appendChild(timelineItem);
+            });
+        }
+
+        function formatDate(dateStr) {
+            const date = new Date(dateStr);
+            const day = date.getDate().toString().padStart(2, '0');
+            const months = ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ'];
+            const month = months[date.getMonth()];
+            return `${day} ${month}`;
+        }
+
+        // Inicializar
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('📱 Página carregada, iniciando...');
+            generateTimeline();
+            updateProgress();
+            
+            // Mostrar calendário por padrão
+            showCalendar();
+            
+            // Aguardar mais tempo para garantir que os scripts Firebase carreguem
+            console.log('⏳ Aguardando Firebase SDK carregar...');
+            setTimeout(() => {
+                console.log('🔥 Tentando conectar Firebase...');
+                autoConnectFirebase();
+            }, 2000);
+        });
+    </script>
+</body>
+</html>
