@@ -1083,6 +1083,7 @@
             database.ref('tasks').on('value', (snapshot) => {
                 const data = snapshot.val();
                 if (data && Array.isArray(data)) {
+                    console.log('🔄 Dados atualizados no Firebase, sincronizando...');
                     tasks = data;
                     tasks.sort((a, b) => {
                         const [yearA, monthA, dayA] = a.date.split('-').map(Number);
@@ -1093,6 +1094,7 @@
                     });
                     saveToLocalStorage();
                     updateInterface();
+                    console.log('✅ Interface atualizada com', tasks.length, 'tarefas');
                 }
             });
 
@@ -1127,11 +1129,11 @@
 
         function updateInterface() {
             updateProgress();
-            if (currentView === 'timeline') {
-                generateTimeline();
-            } else {
-                generateCalendar();
-            }
+            
+            // Sempre atualizar ambas as visualizações
+            generateTimeline();
+            generateCalendar();
+            
             saveToLocalStorage();
         }
 
@@ -1667,19 +1669,26 @@ window.firebaseConfig = {
 
         // Funções de visualização
         function showTimeline() {
+            console.log('📋 Mostrando Timeline com', tasks.length, 'tarefas');
             currentView = 'timeline';
             document.getElementById('timelineBtn').classList.add('active');
             document.getElementById('calendarBtn').classList.remove('active');
             document.getElementById('timeline').style.display = 'block';
             document.getElementById('calendarContainer').style.display = 'none';
+            
+            // Garantir que a timeline está atualizada
+            generateTimeline();
         }
 
         function showCalendar() {
+            console.log('📅 Mostrando Calendário com', tasks.length, 'tarefas');
             currentView = 'calendar';
             document.getElementById('calendarBtn').classList.add('active');
             document.getElementById('timelineBtn').classList.remove('active');
             document.getElementById('timeline').style.display = 'none';
             document.getElementById('calendarContainer').style.display = 'block';
+            
+            // Garantir que o calendário está atualizado
             generateCalendar();
         }
 
@@ -1694,6 +1703,7 @@ window.firebaseConfig = {
         }
 
         function generateCalendar() {
+            console.log('📅 Gerando Calendário com', tasks.length, 'tarefas');
             const calendarGrid = document.getElementById('calendarGrid');
             const calendarTitle = document.getElementById('calendarTitle');
             
@@ -1719,6 +1729,8 @@ window.firebaseConfig = {
             const today = new Date();
             const startDate = new Date(firstDay);
             startDate.setDate(startDate.getDate() - firstDay.getDay());
+            
+            let tasksRendered = 0;
             
             for (let i = 0; i < 42; i++) {
                 const cellDate = new Date(startDate);
@@ -1747,6 +1759,7 @@ window.firebaseConfig = {
                 const dayTasks = tasks.filter(task => task.date === dateStr);
                 
                 dayTasks.forEach(task => {
+                    tasksRendered++;
                     const taskElement = document.createElement('div');
                     taskElement.className = `calendar-task ${task.type}`;
                     taskElement.setAttribute('data-client', task.client);
@@ -1810,11 +1823,19 @@ window.firebaseConfig = {
                 
                 calendarGrid.appendChild(dayElement);
             }
+            
+            console.log('✅ Calendário gerado com', tasksRendered, 'tarefas renderizadas');
         }
 
         function generateTimeline() {
+            console.log('🔄 Gerando Timeline com', tasks.length, 'tarefas');
             const timeline = document.getElementById('timeline');
             timeline.innerHTML = '';
+
+            if (tasks.length === 0) {
+                timeline.innerHTML = '<div style="text-align: center; padding: 50px; color: #7f8c8d;">Nenhuma tarefa encontrada</div>';
+                return;
+            }
 
             const typeNames = {
                 'crm': 'Automação CRM',
@@ -1850,6 +1871,8 @@ window.firebaseConfig = {
                 timeline.appendChild(timelineItem);
                 addCustomClientStyles(task.client, task.type);
             });
+            
+            console.log('✅ Timeline gerada com', tasks.length, 'itens');
         }
 
         function formatDate(dateStr) {
