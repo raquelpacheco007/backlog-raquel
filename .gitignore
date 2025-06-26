@@ -1,0 +1,37 @@
+# Credenciais Firebase (NUNCA enviar para GitHub)
+firebase-config.js
+
+# Outros arquivos sensíveis
+*.env
+.env.local
+.env.production
+.env.development
+config.js
+secrets.js
+credentials.json
+
+# Logs e debug
+*.log
+debug.log
+npm-debug.log*
+
+# Cache e temporários
+.cache/
+.tmp/
+temp/
+tmp/
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Backups
+*.bak
+*.backup
+*.orig
